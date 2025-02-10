@@ -1,5 +1,7 @@
 # CORS Misconfiguration Test Tool
 
+  ![CORS](https://github.com/user-attachments/assets/5515331a-b87c-4187-a556-f44f877e6a74)
+
 ## Overview
 
 The CORS Misconfiguration Test Tool is a simple web application designed to help developers test Cross-Origin Resource Sharing (CORS) configurations for any given URL. It allows users to check whether their APIs are properly configured to handle cross-origin requests, helping to identify potential vulnerabilities due to misconfigurations.
