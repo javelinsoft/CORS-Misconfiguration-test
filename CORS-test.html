@@ -58,7 +58,11 @@
     <div class="container">
         <h1>CORS Test</h1>
         <label for="url">Enter URL: </label>
-        <input type="text" name="url" id="url" class="form-control"><br>
+        <input type="text" name="url" id="url" class="form-control"><br><br><br>
+        <label>
+            <input type="checkbox" id="withCredentials">
+        </label> <br>
+		<label>Include Credentials</label><br><br><br><br>
         <button type="button" onclick="cors()" class="btn-custom">Test CORS</button>
         <button type="button" onclick="refreshPage()" class="btn-custom">Refresh</button>
         
@@ -103,8 +107,7 @@
                     testUrl(httpsUrl, 'httpsResponse');
                     document.getElementById('httpsTitle').style.display = 'block'; // Show HTTPS title
                     document.getElementById('httpsResponse').style.display = 'block'; // Show HTTPS response
-                    document.getElementById('httpTitle').style.display = 'none';
-                    // Hide HTTP title
+                    document.getElementById('httpTitle').style.display = 'none'; // Hide HTTP title
                     document.getElementById('httpResponse').style.display = 'none'; // Hide HTTP response
                 } else {
                     // If no protocol is specified, test both
@@ -135,8 +138,11 @@
                     }
                 }
             };
+
+            // Check if the checkbox is checked to include credentials
+            var withCredentials = document.getElementById('withCredentials').checked;
             xhttp.open('GET', url, true);
-            xhttp.withCredentials = true;
+            xhttp.withCredentials = withCredentials; // Set withCredentials based on checkbox
             xhttp.send();
         }
 
