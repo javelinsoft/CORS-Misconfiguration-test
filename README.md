@@ -23,10 +23,11 @@ The CORS Misconfiguration Test Tool is a simple web application designed to help
 ### Usage
 
 1. Clone the repository or download the HTML file.
-2. Open the `CORS-test.html` and `CORS-test-withCredentials.html` files in your web browser.
+2. Open the `CORS-test.html` file in your web browser.
 3. Enter the URL you want to test in the input field.
 4. Click the "Test CORS" button to see the results.
 5. The tool will display the HTTP response and indicate if the URL is vulnerable or not.
+6. The checkbox can be used to test CORS with Credentials.
 
 ### Example
 
