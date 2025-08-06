@@ -27,7 +27,7 @@
         .btn-custom:hover {
             background-color: #0056b3;
         }
-        input {
+        input, select {
             width: 300px;
             margin-bottom: 10px;
         }
@@ -59,10 +59,22 @@
         <h1>CORS Test</h1>
         <label for="url">Enter URL: </label>
         <input type="text" name="url" id="url" class="form-control"><br><br><br>
+        
+        <label for="method">Select Method: </label>
+        <select id="method">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+            <option value="OPTIONS">OPTIONS</option>
+            <option value="PATCH">PATCH</option>
+        </select><br><br><br>
+        
         <label>
             <input type="checkbox" id="withCredentials">
         </label> <br>
-		<label>Include Credentials</label><br><br><br><br>
+        <label>Include Credentials</label><br><br><br><br>
+        
         <button type="button" onclick="cors()" class="btn-custom">Test CORS</button>
         <button type="button" onclick="refreshPage()" class="btn-custom">Refresh</button>
         
@@ -80,6 +92,7 @@
     <script type="text/javascript">
         function cors() {
             var url = document.getElementById('url').value.trim();
+            var method = document.getElementById('method').value; // Get selected method
             var httpUrl = url.startsWith('http://') ? url : 'http://' + url;
             var httpsUrl = url.startsWith('https://') ? url : 'https://' + url;
 
@@ -98,21 +111,21 @@
 
                 // Test only the specified protocol
                 if (isValidHttp) {
-                    testUrl(httpUrl, 'httpResponse');
+                    testUrl(httpUrl, 'httpResponse', method);
                     document.getElementById('httpTitle').style.display = 'block'; // Show HTTP title
                     document.getElementById('httpResponse').style.display = 'block'; // Show HTTP response
                     document.getElementById('httpsTitle').style.display = 'none'; // Hide HTTPS title
                     document.getElementById('httpsResponse').style.display = 'none'; // Hide HTTPS response
                 } else if (isValidHttps) {
-                    testUrl(httpsUrl, 'httpsResponse');
+                    testUrl(httpsUrl, 'httpsResponse', method);
                     document.getElementById('httpsTitle').style.display = 'block'; // Show HTTPS title
                     document.getElementById('httpsResponse').style.display = 'block'; // Show HTTPS response
                     document.getElementById('httpTitle').style.display = 'none'; // Hide HTTP title
                     document.getElementById('httpResponse').style.display = 'none'; // Hide HTTP response
                 } else {
                     // If no protocol is specified, test both
-                    testUrl(httpUrl, 'httpResponse');
-                    testUrl(httpsUrl, 'httpsResponse');
+                    testUrl(httpUrl, 'httpResponse', method);
+                    testUrl(httpsUrl, 'httpsResponse', method);
                     document.getElementById('httpTitle').style.display = 'block'; // Show HTTP title
                     document.getElementById('httpResponse').style.display = 'block'; // Show HTTP response
                     document.getElementById('httpsTitle').style.display = 'block'; // Show HTTPS title
@@ -124,7 +137,7 @@
             }
         }
 
-        function testUrl(url, responseId) {
+        function testUrl(url, responseId, method) {
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4) {
@@ -141,7 +154,7 @@
 
             // Check if the checkbox is checked to include credentials
             var withCredentials = document.getElementById('withCredentials').checked;
-            xhttp.open('GET', url, true);
+            xhttp.open(method, url, true); // Use the selected method
             xhttp.withCredentials = withCredentials; // Set withCredentials based on checkbox
             xhttp.send();
         }
@@ -152,3 +165,4 @@
     </script>
 </body>
 </html>
+
