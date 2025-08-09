@@ -27,7 +27,7 @@
         .btn-custom:hover {
             background-color: #0056b3;
         }
-        input, select {
+        input {
             width: 300px;
             margin-bottom: 10px;
         }
@@ -36,21 +36,25 @@
             height: 100px;
             margin-top: 10px;
             resize: none;
-            display: block; /* Ensure textareas are block elements */
-            margin-left: auto; /* Center the textareas */
-            margin-right: auto; /* Center the textareas */
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
         .not-vulnerable {
-            background-color: green; /* Change to green for not vulnerable */
-            color: white; /* Text color white for better contrast */
+            background-color: green;
+            color: white;
         }
         .vulnerable {
-            background-color: red; /* Change to red for vulnerable */
-            color: white; /* Text color white for better contrast */
+            background-color: red;
+            color: white;
         }
         .response-section {
-            display: none; /* Initially hidden */
+            display: none;
             margin-top: 20px;
+        }
+        .method-used {
+            color: red;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -59,22 +63,18 @@
         <h1>CORS Test</h1>
         <label for="url">Enter URL: </label>
         <input type="text" name="url" id="url" class="form-control"><br><br><br>
-        
         <label for="method">Select Method: </label>
         <select id="method">
             <option value="GET">GET</option>
             <option value="POST">POST</option>
             <option value="PUT">PUT</option>
             <option value="DELETE">DELETE</option>
-            <option value="OPTIONS">OPTIONS</option>
             <option value="PATCH">PATCH</option>
-        </select><br><br><br>
-        
+        </select><br><br>
         <label>
             <input type="checkbox" id="withCredentials">
         </label> <br>
         <label>Include Credentials</label><br><br><br><br>
-        
         <button type="button" onclick="cors()" class="btn-custom">Test CORS</button>
         <button type="button" onclick="refreshPage()" class="btn-custom">Refresh</button>
         
@@ -87,52 +87,48 @@
                 <h3>HTTPS Response</h3>
             </div>
             <textarea id="httpsResponse" placeholder="HTTPS response will be displayed here..." readonly style="display: none;"></textarea>
+            <div id="methodUsed" class="method-used" style="display: none;"></div>
         </div>
     </div>
     <script type="text/javascript">
         function cors() {
             var url = document.getElementById('url').value.trim();
-            var method = document.getElementById('method').value; // Get selected method
             var httpUrl = url.startsWith('http://') ? url : 'http://' + url;
             var httpsUrl = url.startsWith('https://') ? url : 'https://' + url;
 
-            // Clear both responses initially
             document.getElementById('httpResponse').value = '';
             document.getElementById('httpsResponse').value = '';
+            document.getElementById('methodUsed').style.display = 'none';
 
-            // Validate URL format
             var isValidHttp = url.startsWith('http://');
             var isValidHttps = url.startsWith('https://');
             var isValidFormat = url.includes('.') && (isValidHttp || isValidHttps || (!isValidHttp && !isValidHttps));
 
-            // Show the response section only if the URL is valid
             if (isValidFormat) {
                 document.getElementById('responseSection').style.display = 'block';
+                var selectedMethod = document.getElementById('method').value;
 
-                // Test only the specified protocol
                 if (isValidHttp) {
-                    testUrl(httpUrl, 'httpResponse', method);
-                    document.getElementById('httpTitle').style.display = 'block'; // Show HTTP title
-                    document.getElementById('httpResponse').style.display = 'block'; // Show HTTP response
-                    document.getElementById('httpsTitle').style.display = 'none'; // Hide HTTPS title
-                    document.getElementById('httpsResponse').style.display = 'none'; // Hide HTTPS response
+                    testUrl(httpUrl, 'httpResponse', selectedMethod);
+                    document.getElementById('httpTitle').style.display = 'block';
+                    document.getElementById('httpResponse').style.display = 'block';
+                    document.getElementById('httpsTitle').style.display = 'none';
+                    document.getElementById('httpsResponse').style.display = 'none';
                 } else if (isValidHttps) {
-                    testUrl(httpsUrl, 'httpsResponse', method);
-                    document.getElementById('httpsTitle').style.display = 'block'; // Show HTTPS title
-                    document.getElementById('httpsResponse').style.display = 'block'; // Show HTTPS response
-                    document.getElementById('httpTitle').style.display = 'none'; // Hide HTTP title
-                    document.getElementById('httpResponse').style.display = 'none'; // Hide HTTP response
+                    testUrl(httpsUrl, 'httpsResponse', selectedMethod);
+                    document.getElementById('httpsTitle').style.display = 'block';
+                    document.getElementById('httpsResponse').style.display = 'block';
+                    document.getElementById('httpTitle').style.display = 'none';
+                    document.getElementById('httpResponse').style.display = 'none';
                 } else {
-                    // If no protocol is specified, test both
-                    testUrl(httpUrl, 'httpResponse', method);
-                    testUrl(httpsUrl, 'httpsResponse', method);
-                    document.getElementById('httpTitle').style.display = 'block'; // Show HTTP title
-                    document.getElementById('httpResponse').style.display = 'block'; // Show HTTP response
-                    document.getElementById('httpsTitle').style.display = 'block'; // Show HTTPS title
-                    document.getElementById('httpsResponse').style.display = 'block'; // Show HTTPS response
+                    testUrl(httpUrl, 'httpResponse', selectedMethod);
+                    testUrl(httpsUrl, 'httpsResponse', selectedMethod);
+                    document.getElementById('httpTitle').style.display = 'block';
+                    document.getElementById('httpResponse').style.display = 'block';
+                    document.getElementById('httpsTitle').style.display = 'block';
+                    document.getElementById('httpsResponse').style.display = 'block';
                 }
             } else {
-                // Hide the response section if the URL is invalid
                 document.getElementById('responseSection').style.display = 'none';
             }
         }
@@ -142,25 +138,33 @@
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4) {
                     if (this.status == 200) {
+                        // Vulnerable: CORS is enabled
                         document.getElementById(responseId).value = this.responseText;
                         document.getElementById(responseId).className = 'vulnerable';
+                        document.getElementById('methodUsed').innerText = 'Vulnerable Method: ' + method;
+                        document.getElementById('methodUsed').style.display = 'block';
                     } else {
+                        // Not vulnerable: CORS is not enabled
                         document.getElementById(responseId).value = '';
                         document.getElementById(responseId).className = 'not-vulnerable';
-                        document.getElementById(responseId).placeholder = 'Not vulnerable';
                     }
                 }
             };
 
-            // Check if the checkbox is checked to include credentials
             var withCredentials = document.getElementById('withCredentials').checked;
-            xhttp.open(method, url, true); // Use the selected method
-            xhttp.withCredentials = withCredentials; // Set withCredentials based on checkbox
-            xhttp.send();
+            xhttp.open(method, url, true);
+            xhttp.withCredentials = withCredentials;
+
+            if (method === 'POST') {
+                xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhttp.send('data=test');
+            } else {
+                xhttp.send();
+            }
         }
 
         function refreshPage() {
-            location.reload(); // Reload the current page
+            location.reload();
         }
     </script>
 </body>
